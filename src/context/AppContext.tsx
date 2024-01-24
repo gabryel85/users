@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@redux/store';
-import { fetchUsers, addUser, User } from '@redux/usersSlice';
+import { fetchUsers, addUserAsync, User } from '@redux/usersSlice';
 
 export interface AppContextProps {
 	users: User[];
@@ -35,7 +35,7 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({ children
 	};
 
 	const handleAddUser = (user: User) => {
-		dispatch(addUser(user));
+		dispatch(addUserAsync(user));
 	};
 
 	const handleSearchUsers = (searchTerm: string) => {

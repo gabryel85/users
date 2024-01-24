@@ -20,10 +20,26 @@ const initialState: UsersState = {
 	error: null,
 };
 
+// Existing fetchUsers thunk
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
-	const response = await fetch('https://jsonplaceholder.typicode.com/users');
+	const response = await fetch('http://localhost:3005/api/users');
 	if (!response.ok) {
 		throw new Error('Nie można załadować użytkowników');
+	}
+	return response.json();
+});
+
+// AddUserAsync thunk
+export const addUserAsync = createAsyncThunk('users/addUser', async (user: User) => {
+	const response = await fetch('http://localhost:3005/api/users', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(user),
+	});
+	if (!response.ok) {
+		throw new Error('Nie można dodać użytkownika');
 	}
 	return response.json();
 });
@@ -32,9 +48,7 @@ export const usersSlice = createSlice({
 	name: 'users',
 	initialState,
 	reducers: {
-		addUser: (state, action: PayloadAction<User>) => {
-			state.users.push(action.payload);
-		},
+		// Reducer logic here
 	},
 	extraReducers: builder => {
 		builder
@@ -48,9 +62,11 @@ export const usersSlice = createSlice({
 			.addCase(fetchUsers.rejected, (state, action) => {
 				state.status = 'failed';
 				state.error = action.error.message || 'Nieznany błąd';
+			})
+			.addCase(addUserAsync.fulfilled, (state, action) => {
+				state.users.push(action.payload);
 			});
 	},
 });
 
-export const { addUser } = usersSlice.actions;
 export default usersSlice.reducer;
